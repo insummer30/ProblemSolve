@@ -36,7 +36,6 @@ public class 삼성_주사위굴리기 {
         }
 
         // 명령어 수행하면서 출력하기
-        // 1:동쪽, 2:서쪽, 3:북쪽, 4:남쪽
         for (int i = 0 ; i < cmdNum ; i++) {
             dice.move(cmdArr[i]);
         }
@@ -81,6 +80,7 @@ public class 삼성_주사위굴리기 {
         }
 
         public void move(int direct) {
+            // 1:동쪽, 2:서쪽, 3:북쪽, 4:남쪽
             switch (direct) {
                 case 1: moveEast(); break;
                 case 2: moveWest(); break;
@@ -93,11 +93,13 @@ public class 삼성_주사위굴리기 {
         public void moveEast() {
             if(checkBoundary(x, y + 1)) {
                 y++;
+
                 int tmp = surface[0];
                 surface[0] = surface[3];
                 surface[3] = surface[2];
                 surface[2] = surface[1];
                 surface[1] = tmp;
+
                 changeBottom();
                 System.out.println(surface[1]);
             }
@@ -107,11 +109,13 @@ public class 삼성_주사위굴리기 {
         public void moveWest() {
             if(checkBoundary(x, y - 1)) {
                 y--;
+
                 int tmp = surface[0];
                 surface[0] = surface[1];
                 surface[1] = surface[2];
                 surface[2] = surface[3];
                 surface[3] = tmp;
+
                 changeBottom();
                 System.out.println(surface[1]);
             }
@@ -121,11 +125,13 @@ public class 삼성_주사위굴리기 {
         public void moveNorth() {
             if(checkBoundary(x - 1, y)) {
                 x--;
+
                 int tmp = surface[3];
                 surface[3] = surface[4];
                 surface[4] = surface[1];
                 surface[1] = surface[5];
                 surface[5] = tmp;
+
                 changeBottom();
                 System.out.println(surface[1]);
             }
@@ -135,11 +141,13 @@ public class 삼성_주사위굴리기 {
         public void moveSouth() {
             if(checkBoundary(x + 1, y)) {
                 x++;
+
                 int tmp = surface[4];
                 surface[4] = surface[3];
                 surface[3] = surface[5];
                 surface[5] = surface[1];
                 surface[1] = tmp;
+
                 changeBottom();
                 System.out.println(surface[1]);
             }
