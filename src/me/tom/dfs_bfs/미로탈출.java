@@ -38,8 +38,6 @@ public class 미로탈출 {
             }
         }
 
-        System.out.println("Started...");
-
         int ret = bfs(0, 0, graph, n, m);
         System.out.println("result = " + ret);
     }
