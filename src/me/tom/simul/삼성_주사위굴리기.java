@@ -3,9 +3,7 @@ package me.tom.simul;
 import java.util.Scanner;
 
 /**
- * Created on 2021/07/22
- *
- * @author tom.j
+ * 문제 링크: https://www.acmicpc.net/problem/14499
  */
 public class 삼성_주사위굴리기 {
     public static void main(String[] args) {
