@@ -27,6 +27,7 @@ public class 삼성_연구소 {
             }
         }
 
+        // 벽 3개를 세우는 모든 조합 선택하면서 계산하기
         pick(map, 3, 0, 0);
 
         System.out.println(max);
@@ -53,15 +54,18 @@ public class 삼성_연구소 {
         for (int x = startX ; x < N ; x++) {
             for (int y = startY ; y < M ; y++) {
                 if (map[x][y] == 0) {
-                    map[x][y] = 1;      // 현위치 벽 세우기
-                    pick(map, count - 1, x, y);
-                    map[x][y] = 0;      // 벽 안세우고 다음꺼 선택하기
+                    map[x][y] = 1;                      // 현위치 벽 세우기
+                    pick(map, count - 1, x, y);   // 다음 세울 벽 찾기
+                    map[x][y] = 0;                      // 벽 안세우고 다음꺼 선택하기
                 }
             }
             startY = 0;
         }
     }
 
+    /**
+     * 입력 받은 지도를 기준으로 바이러스를 퍼뜨린 후 빈공간 카운트해서 max 값 갱신하기
+     */
     public static void spreadBFS(int[][] originMap) {
         Queue<Coord> q = new LinkedList<>();
 
