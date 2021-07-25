@@ -5,9 +5,8 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class 삼성_구슬탈출2 {
-    public static int N;
-    public static int M;
-    public static char[][] map;
+    public static int N, M;         // 지도 크기
+    public static char[][] map;     // 지도 데이터
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -16,6 +15,7 @@ public class 삼성_구슬탈출2 {
 
         map = new char[N][M];
         Position initPosition = new Position();
+
         // 지도 채우기
         for (int i = 0 ; i < N ; i++) {
             String line = sc.next();
@@ -39,6 +39,11 @@ public class 삼성_구슬탈출2 {
         System.out.println(result);
     }
 
+    /**
+     * 초기 위치로부터 좌,우,상,하 움직임을 탐색하는 함수
+     *  탐색 중 정답이 발견되면 그때의 뎁스 (시도 횟수) 반환
+     *  끝까지 (최대 10 뎁스) 탐색했으나 없으면 -1 반환
+      */
     public static int bfs(Position position) {
         Queue<Position> q = new LinkedList<>();
         q.offer(position);
@@ -48,45 +53,23 @@ public class 삼성_구슬탈출2 {
 
             // 현재 move가 10이면 다음번 움직임은 필요가 없음
             if (curr.moveCount > 9) {
-                continue;
+                return -1;
             }
 
-            // 4방향 움직이고 종료 여부 판정
-            // 종료 되면 즉시 현재 moveCount를 반환, 파란공 빠지면 q에 넣지 않음
-            Position left = curr.clone();
-            left.moveLeft();
-            if (left.isRedExit && !left.isBlueExit) {
-                return left.moveCount; // 정답
-            } else if (!left.isRedExit && !left.isBlueExit){
-                // 둘 다 안나왔으면 더 탐색해야 함.
-                q.offer(left);
-            }
+            /*
+                좌,우,상,하 4방향 움직이고 정답 판정
+             */
+            for (int dir = 0 ; dir < 4 ; dir++) {
+                Position nextPosition = curr.clone();
 
-            Position right = curr.clone();
-            right.moveRight();
-            if (right.isRedExit && !right.isBlueExit) {
-                return right.moveCount; // 정답
-            } else if (!right.isRedExit && !right.isBlueExit){
-                // 둘 다 안나왔으면 더 탐색해야 함.
-                q.offer(right);
-            }
+                nextPosition.move(dir);
 
-            Position up = curr.clone();
-            up.moveUp();
-            if (up.isRedExit && !up.isBlueExit) {
-                return up.moveCount; // 정답
-            } else if (!up.isRedExit && !up.isBlueExit){
-                // 둘 다 안나왔으면 더 탐색해야 함.
-                q.offer(up);
-            }
-
-            Position down = curr.clone();
-            down.moveDown();
-            if (down.isRedExit && !down.isBlueExit) {
-                return down.moveCount; // 정답
-            } else if (!down.isRedExit && !down.isBlueExit){
-                // 둘 다 안나왔으면 더 탐색해야 함.
-                q.offer(down);
+                if (nextPosition.isRedExit && !nextPosition.isBlueExit) {
+                    return nextPosition.moveCount; // 정답
+                } else if (!nextPosition.isRedExit && !nextPosition.isBlueExit){
+                    // 둘 다 안나왔으면 더 탐색해야 함.
+                    q.offer(nextPosition);
+                }
             }
         }
 
@@ -118,6 +101,15 @@ public class 삼성_구슬탈출2 {
             return newOne;
         }
 
+        public void move(int dir) {
+            switch (dir) {
+                case 0: moveLeft(); break;
+                case 1: moveRight(); break;
+                case 2: moveUp(); break;
+                case 3: moveDown(); break;
+            }
+        }
+
         public void moveLeft() {
             moveCount++;
             // 초기 Y 위치 저장
@@ -128,10 +120,6 @@ public class 삼성_구슬탈출2 {
             boolean canMove = true;
             while (canMove) {
                 int nextY = red.y - 1;
-                if (nextY < 1 || nextY >= M - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[red.x][nextY] == '.') {
                     red.y--;
@@ -144,14 +132,10 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 2. 파란공 왼쪽 이동
+            // 2. 파란공 왼쪽 이동 (y-- 방향)
             canMove = true;
             while (canMove) {
                 int nextY = blue.y - 1;
-                if (nextY < 1 || nextY >= M - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[blue.x][nextY] == '.') {
                     blue.y--;
@@ -164,9 +148,8 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 두 공이 같은 row에 있어서 겹친 경우
+            // 두 공이 같은 공간에 있게된 경우
             if (red.y == blue.y && red.x == blue.x) {
-                // 빨간게 왼쪽에 있었으면, 파란공을 오른쪽으로 한 칸 움직임.
                 if (initRedY < initBlueY) {
                     blue.y++;
                 } else {
@@ -185,10 +168,6 @@ public class 삼성_구슬탈출2 {
             boolean canMove = true;
             while (canMove) {
                 int nextY = red.y + 1;
-                if (nextY < 1 || nextY >= M - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[red.x][nextY] == '.') {
                     red.y++;
@@ -201,14 +180,10 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 2. 파란공 오른쪽 이동
+            // 2. 파란공 오른쪽 이동 (y++ 방향)
             canMove = true;
             while (canMove) {
                 int nextY = blue.y + 1;
-                if (nextY < 1 || nextY >= M - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[blue.x][nextY] == '.') {
                     blue.y++;
@@ -221,9 +196,8 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 두 공이 같은 row에 있어서 겹친 경우
+            // 두 공이 같은 공간에 있게된 경우
             if (red.y == blue.y && red.x == blue.x) {
-                // 빨간게 왼쪽에 있었으면, 파란공을 오른쪽으로 한 칸 움직임.
                 if (initRedY < initBlueY) {
                     red.y--;
                 } else {
@@ -242,10 +216,6 @@ public class 삼성_구슬탈출2 {
             boolean canMove = true;
             while (canMove) {
                 int nextX = red.x - 1;
-                if (nextX < 1 || nextX >= N - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[nextX][red.y] == '.') {
                     red.x--;
@@ -258,14 +228,10 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 2. 파란공 위쪽 이동
+            // 2. 파란공 위쪽 이동 (x-- 방향)
             canMove = true;
             while (canMove) {
                 int nextX = blue.x - 1;
-                if (nextX < 1 || nextX >= N - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[nextX][blue.y] == '.') {
                     blue.x--;
@@ -278,9 +244,8 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 두 공이 같은 colum에 있어서 겹친 경우
+            // 두 공이 같은 공간에 있게된 경우
             if (red.x == blue.x && red.y == blue.y) {
-                // 빨간게 왼쪽에 있었으면, 파란공을 오른쪽으로 한 칸 움직임.
                 if (initRedX < initBlueX) {
                     blue.x++;
                 } else {
@@ -299,10 +264,6 @@ public class 삼성_구슬탈출2 {
             boolean canMove = true;
             while (canMove) {
                 int nextX = red.x + 1;
-                if (nextX < 1 || nextX >= N - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[nextX][red.y] == '.') {
                     red.x++;
@@ -315,14 +276,10 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 2. 파란공 아래쪽 이동
+            // 2. 파란공 아래쪽 이동 (x++ 방향)
             canMove = true;
             while (canMove) {
                 int nextX = blue.x + 1;
-                if (nextX < 1 || nextX >= N - 1) {
-                    canMove = false;
-                    continue;
-                }
                 // 빈 공간이면 움직여
                 if (map[nextX][blue.y] == '.') {
                     blue.x++;
@@ -335,9 +292,8 @@ public class 삼성_구슬탈출2 {
                 }
             }
 
-            // 두 공이 같은 colum에 있어서 겹친 경우
+            // 두 공이 같은 공간에 있게된 경우
             if (red.x == blue.x && red.y == blue.y) {
-                // 빨간게 왼쪽에 있었으면, 파란공을 오른쪽으로 한 칸 움직임.
                 if (initRedX < initBlueX) {
                     red.x--;
                 } else {
@@ -348,7 +304,7 @@ public class 삼성_구슬탈출2 {
 
     }
 
-
+    // 공 좌표
     public static class Coord {
         public int x;
         public int y;
